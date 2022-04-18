@@ -13,6 +13,7 @@ namespace Word_Delimiter
     public partial class Form1 : Form
     {
         static char[] punctuation = new char[] { ' ', '\n', '.', ',', '!', '?', '"', '(', ')', ';', ':', '\'', '{', '}' };
+        int limit;
 
         public Form1()
         {
@@ -21,6 +22,30 @@ namespace Word_Delimiter
 
         private void ProcessText(String str)
         {
+            if (limit == 0)
+            {
+                if (textBox1.Text.Length != 0)
+                {
+                    if (textBox1.Text == "0")
+                    {
+                        MessageBox.Show("Максимальная длина не может быть равна 0");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Введенное число невозможно считать");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Введите максимальную длину слова");
+                }
+                return;
+            }
+            else if (limit < 0)
+            {
+                MessageBox.Show("Максимальная длина не может быть отрицательной");
+                return;
+            }
             int words = 0, short_words = 0, letter_counter = 0, word_counter = 0;
             String resulting_text = string.Empty;
 
@@ -29,14 +54,16 @@ namespace Word_Delimiter
                 char c = str[i];
                 if (punctuation.Contains(c))
                 {
-                    if (letter_counter < 3)
+                    if (letter_counter != 0)
+                    {
                         words++; short_words++;
+                    }
                     resulting_text += c;
                     letter_counter = 0;
                 }
                 else
                 {
-                    if (letter_counter < 3)
+                    if (letter_counter < limit)
                     {
                         resulting_text += c;
                         letter_counter++;
@@ -76,7 +103,7 @@ namespace Word_Delimiter
                     }
                 }
             }
-            if (letter_counter <= 3)
+            if (letter_counter != 0)
             {
                 short_words++;
                 words++;
@@ -92,6 +119,18 @@ namespace Word_Delimiter
             richTextBox2.Text = String.Empty;
             String inputText = richTextBox1.Text;
             await Task.Run(() => ProcessText(inputText));
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (Int32.TryParse(textBox1.Text, out limit))
+            {
+                textBox1.ForeColor = Color.Black;
+            }
+            else
+            {
+                textBox1.ForeColor = Color.Red;
+            }
         }
     }
 }
