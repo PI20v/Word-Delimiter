@@ -12,8 +12,9 @@ namespace Word_Delimiter
 {
     public partial class Form1 : Form
     {
-        static char[] punctuation = new char[] { ' ', '\n', '.', ',', '!', '?', '"', '(', ')', ';', ':', '\'', '{', '}' };
+        public static char[] punctuation = new char[] { ' ', '\n', '.', ',', '!', '?', '"', '(', ')', ';', ':', '\'', '{', '}' };
         int limit;
+        
 
         public Form1()
         {
@@ -131,6 +132,68 @@ namespace Word_Delimiter
             {
                 textBox1.ForeColor = Color.Red;
             }
+        }
+
+        public bool isClosed_FindWords = true;
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (isClosed_FindWords)
+            {
+                FindWords findWords = new FindWords();
+                findWords.Show(this);
+                isClosed_FindWords = false;
+            }
+        }
+
+        private void richTextBox2_SelectionChanged(object sender, EventArgs e)
+        {
+            char c;
+            String subStr;
+            int words = 0;
+            String found = string.Empty;
+            richTextBox1.SelectionColor = Color.Black;
+            int pos = richTextBox2.SelectionStart;
+
+            if (pos != 0)
+            {
+                c = richTextBox2.Text[pos - 1];
+                while (!(punctuation.Contains(c) | pos == 0))
+                {
+                    c = richTextBox2.Text[pos - 1];
+                    pos--;
+                }
+
+                subStr = richTextBox2.Text.Substring(0, pos + 1).Replace("...", String.Empty);
+
+                for (int i = 0; i < subStr.Length; i++)
+                {
+                    c = subStr[i];
+                    if (punctuation.Contains(c))
+                        words++;
+                }
+
+                pos = 0;
+                for (int words_counter = 0; words_counter != words; pos++)
+                {
+                    c = richTextBox1.Text[pos];
+                    if (punctuation.Contains(c))
+                        words_counter++;
+                }
+            }
+
+            for (int i = pos; i < richTextBox1.Text.Length; i++)
+            {
+                c = richTextBox1.Text[i];
+                if (punctuation.Contains(c))
+                    break;
+                else
+                    found += c;
+            }
+
+            richTextBox1.SelectionStart = pos;
+            richTextBox1.SelectionLength = found.Length;
+            richTextBox1.SelectionColor = Color.Red;
+            richTextBox1.ScrollToCaret();
         }
     }
 }

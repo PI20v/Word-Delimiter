@@ -72,6 +72,7 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "Поиск";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -127,6 +128,7 @@
             this.richTextBox2.Size = new System.Drawing.Size(530, 390);
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "";
+            this.richTextBox2.SelectionChanged += new System.EventHandler(this.richTextBox2_SelectionChanged);
             // 
             // Form1
             // 
@@ -154,8 +156,8 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        public System.Windows.Forms.RichTextBox richTextBox1;
+        public System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
     }

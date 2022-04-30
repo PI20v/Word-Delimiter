@@ -16,3 +16,4 @@ E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimite
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\Word-Delimiter.pdb
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\Word-Delimiter.genruntimeconfig.cache
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\ref\Word-Delimiter.dll
+E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\Word_Delimiter.FindWords.resources
