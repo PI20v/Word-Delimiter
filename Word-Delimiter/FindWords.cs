@@ -95,7 +95,7 @@ namespace Word_Delimiter
                 return;
             owner.richTextBox1.SelectionStart = found_pos;
             owner.richTextBox1.SelectionLength = len;
-            owner.richTextBox1.SelectionColor = Color.Red;
+            owner.richTextBox1.SelectionColor = owner.selectionColor;
             owner.richTextBox1.ScrollToCaret();
             owner.richTextBox1.SelectionStart = found_pos + len;
             cur_pos = found_pos + len;

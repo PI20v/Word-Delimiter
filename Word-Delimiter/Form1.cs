@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace Word_Delimiter
 {
@@ -14,11 +16,35 @@ namespace Word_Delimiter
     {
         public static char[] punctuation = new char[] { ' ', '\n', '.', ',', '!', '?', '"', '(', ')', ';', ':', '\'', '{', '}' };
         int limit;
-        
+        public Color selectionColor = Color.Red;
 
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
+            try
+            {
+                using (var reader = new StreamReader("config.xml"))
+                {
+                    var serializer = new XmlSerializer(typeof(int));
+                    try
+                    {
+                        selectionColor = Color.FromArgb((int)serializer.Deserialize(reader));
+                    }
+                    catch (Exception)
+                    {
+                        return;
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                return;
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show("Непредвиденная ошибка при открытии файла настроек\n\n" + exc.Message);
+            }
         }
 
         private void ProcessText(String str)
@@ -95,7 +121,7 @@ namespace Word_Delimiter
                         word_counter++;
                         words++;
 
-                        if (word_counter == 10000)
+                        if (word_counter == 15000)
                         {
                             Invoke(new Action(() => richTextBox2.Text += resulting_text));
                             word_counter = 0;
@@ -119,6 +145,8 @@ namespace Word_Delimiter
         {
             richTextBox2.Text = String.Empty;
             String inputText = richTextBox1.Text;
+            richTextBox1.SelectAll();
+            richTextBox1.SelectionColor = Color.Black;
             await Task.Run(() => ProcessText(inputText));
         }
 
@@ -147,6 +175,8 @@ namespace Word_Delimiter
 
         private void richTextBox2_SelectionChanged(object sender, EventArgs e)
         {
+            if (richTextBox2.SelectionStart == richTextBox2.Text.Length)
+                return;
             char c;
             String subStr;
             int words = 0;
@@ -192,8 +222,40 @@ namespace Word_Delimiter
 
             richTextBox1.SelectionStart = pos;
             richTextBox1.SelectionLength = found.Length;
-            richTextBox1.SelectionColor = Color.Red;
+            richTextBox1.SelectionColor = selectionColor;
             richTextBox1.ScrollToCaret();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ColorDialog dialog = new ColorDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                selectionColor = dialog.Color;
+                try
+                {
+                    using (var writer = new StreamWriter("config.xml"))
+                    {
+                        var serializer = new XmlSerializer(typeof(int));
+                        try
+                        {
+                            serializer.Serialize(writer, selectionColor.ToArgb());
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    return;
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show("Непредвиденная ошибка при сохранении файла настроек\n\n" + exc.Message);
+                }
+            }
         }
     }
 }
