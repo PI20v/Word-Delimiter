@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using NPOI.XWPF.UserModel;
+using static NPOI.HSSF.Util.HSSFColor;
 
 namespace Word_Delimiter
 {
@@ -17,6 +19,8 @@ namespace Word_Delimiter
         public static char[] punctuation = new char[] { ' ', '\n', '.', ',', '!', '?', '"', '(', ')', ';', ':', '\'', '{', '}' };
         int limit;
         public Color selectionColor = Color.Red;
+
+        public bool isProcessed = false;
 
         public Form1()
         {
@@ -169,6 +173,8 @@ namespace Word_Delimiter
                     }
                 }
             }
+
+            isProcessed = true;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -196,6 +202,10 @@ namespace Word_Delimiter
 
         private void richTextBox2_SelectionChanged(object sender, EventArgs e)
         {
+            if (!isProcessed)
+            {
+                return;
+            }
             if (richTextBox2.SelectionStart == richTextBox2.Text.Length)
                 return;
             char c;
@@ -277,6 +287,54 @@ namespace Word_Delimiter
                     MessageBox.Show("Непредвиденная ошибка при сохранении файла настроек\n\n" + exc.Message);
                 }
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|docx files (.docx)|*.docx|All files (*.*)|*.*";
+            openFileDialog.Multiselect = false;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                
+
+                if (openFileDialog.FileName.EndsWith(".docx") || openFileDialog.FileName.EndsWith(".DOCX"))
+                {
+                    XWPFDocument document = null;
+                    try
+                    {
+                        using (FileStream file = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
+                        {
+                            document = new XWPFDocument(file);
+                        }
+                        richTextBox1.Clear();
+                        richTextBox2.Clear();
+                        foreach (var paragraph in document.Paragraphs)
+                        {
+                            richTextBox1.Text += paragraph.Text + Environment.NewLine;
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+                else
+                {
+                    using (var reader = new StreamReader(openFileDialog.FileName))
+                    {
+                        richTextBox1.Clear();
+                        richTextBox2.Clear();
+                        richTextBox1.Text = reader.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (isProcessed)
+                isProcessed = false;
         }
     }
 }
