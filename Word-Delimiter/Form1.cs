@@ -148,6 +148,27 @@ namespace Word_Delimiter
             richTextBox1.SelectAll();
             richTextBox1.SelectionColor = Color.Black;
             await Task.Run(() => ProcessText(inputText));
+
+            if (MessageBox.Show("Сохранить результат?", "Сохранить результат?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog.RestoreDirectory = true;
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (var writer = new StreamWriter(saveFileDialog.FileName))
+                        {
+                            await writer.WriteAsync(richTextBox2.Text);
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show("Непредвиденная ошибка при сохранении текста в файл\n" + exc.Message);
+                    }
+                }
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
