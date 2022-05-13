@@ -144,6 +144,7 @@ namespace Word_Delimiter
             MessageBox.Show($"Обработано слов: {words}\nСлов укорочено: {words - short_words}\nСлов без изменений: {short_words}");
         }
 
+        String temp;
         //Обработка текста
         private async void button1_Click(object sender, EventArgs e)
         {
@@ -173,7 +174,7 @@ namespace Word_Delimiter
                     }
                 }
             }
-
+            temp = richTextBox1.Text;
             isProcessed = true;
         }
 
@@ -333,7 +334,7 @@ namespace Word_Delimiter
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
-            if (isProcessed)
+            if (isProcessed && richTextBox1.Text != temp) 
                 isProcessed = false;
         }
     }
