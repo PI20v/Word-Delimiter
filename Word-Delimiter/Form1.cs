@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using NPOI.HPSF;
 using NPOI.XWPF.UserModel;
 using static NPOI.HSSF.Util.HSSFColor;
 
@@ -30,10 +32,12 @@ namespace Word_Delimiter
             {
                 using (var reader = new StreamReader("config.xml"))
                 {
-                    var serializer = new XmlSerializer(typeof(int));
+                    var serializer = new XmlSerializer(typeof(struc));
                     try
                     {
-                        selectionColor = Color.FromArgb((int)serializer.Deserialize(reader));
+                        var a = (struc)serializer.Deserialize(reader);
+                        selectionColor = Color.FromArgb(a.a);
+                        punctuation = a.b.ToCharArray();
                     }
                     catch (Exception)
                     {
@@ -144,6 +148,8 @@ namespace Word_Delimiter
             MessageBox.Show($"Обработано слов: {words}\nСлов укорочено: {words - short_words}\nСлов без изменений: {short_words}");
         }
 
+        Task task;
+
         String temp;
         //Обработка текста
         private async void button1_Click(object sender, EventArgs e)
@@ -152,8 +158,8 @@ namespace Word_Delimiter
             String inputText = richTextBox1.Text;
             richTextBox1.SelectAll();
             richTextBox1.SelectionColor = Color.Black;
-            await Task.Run(() => ProcessText(inputText));
-
+            task = Task.Run(() => ProcessText(inputText));
+            await task;
             if (MessageBox.Show("Сохранить результат?", "Сохранить результат?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -258,20 +264,32 @@ namespace Word_Delimiter
             richTextBox1.ScrollToCaret();
         }
 
+        public struct struc
+        {
+            public int a;
+            public String b;
+            public struc(int a, String b)
+            {
+                this.a = a;
+                this.b = b;
+            }
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
-            ColorDialog dialog = new ColorDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
+            var settings = new Settings(new string(punctuation), selectionColor);
+            if (settings.ShowDialog() == DialogResult.OK)
             {
-                selectionColor = dialog.Color;
+                punctuation = settings.ResText.ToCharArray();
+                selectionColor = settings.res;
                 try
                 {
                     using (var writer = new StreamWriter("config.xml"))
                     {
-                        var serializer = new XmlSerializer(typeof(int));
+                        var serializer = new XmlSerializer(typeof(struc));
                         try
                         {
-                            serializer.Serialize(writer, selectionColor.ToArgb());
+                            serializer.Serialize(writer, new struc(selectionColor.ToArgb(), settings.ResText));
                         }
                         catch (Exception)
                         {
@@ -334,8 +352,22 @@ namespace Word_Delimiter
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
+            if (task != null)
+            {
+                if (task.Status == TaskStatus.Running)
+                {
+                    richTextBox1.Undo();
+                    MessageBox.Show("Идет обработка текста");
+                    return;
+                }
+            }
             if (isProcessed && richTextBox1.Text != temp) 
                 isProcessed = false;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+{
+            Process.Start("notepad.exe", "spravka.txt");
         }
     }
 }

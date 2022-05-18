@@ -25,3 +25,4 @@ E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimite
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\bin\Debug\net5.0-windows\BouncyCastle.Crypto.dll
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\bin\Debug\net5.0-windows\ICSharpCode.SharpZipLib.dll
 E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\Word-Delimiter.csproj.CopyComplete
+E:\OneDrive\PI20B\2Курс\2й семестр\ГД\Word-Delimiter\Word-Delimiter\obj\Debug\net5.0-windows\Word_Delimiter.Settings.resources
